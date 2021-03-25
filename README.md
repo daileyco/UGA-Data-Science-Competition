@@ -49,24 +49,41 @@ README.md
   
 ## Task List  
   
->**1. Collaboration Orientation**  
+>**1. Collaboration Orientation - March 25 @ 5PM**  
 2. Independent Exploration with Item Analysis
 3. Data Management, Pre-processing, & Cleaning (Create Data Dictionary with Comments / Same Script)   
 4. Independent Literature Review  
->**4. Planning Meeting - March 30 @ 9-11AM**  
-5. Data Management, Pre-processing, & Cleaning II  
-6. Cooperative Interrogation  
-7. Data Management, Pre-processing, & Cleaning III  
->**8. Planning Meeting - April 2 @ 4PM**  
-9. Model Fitting  
-10. Diagnostics  
-11. Estimation & Inference  
->**12. Planning Meeting - April 9 @ 3-4PM**  
-13. Interpretation & Conclusions  
-14. Reflection & Review  
-15. Communication  
->**16. Final Meeting - April 13-14 TBD**  
+>**5. Planning Meeting - March 30 @ 9-11AM**  
+6. Data Management, Pre-processing, & Cleaning II  
+7. Cooperative Interrogation  
+8. Data Management, Pre-processing, & Cleaning III  
+>**9. Planning Meeting - April 2 @ 4PM**  
+10. Model Fitting  
+11. Diagnostics  
+12. Estimation & Inference  
+>**13. Planning Meeting - April 9 @ 3-4PM**  
+14. Interpretation & Conclusions  
+15. Reflection & Review  
+16. Communication  
+>**17. Final Meeting - April 13-14 TBD**  
 
 
 ## Running Questions  
 - Outside data sources?
+
+
+
+
+
+
+## Meeting Notes
+
+### March 25
+
+- Discussed competition deliverables, team member competencies, general direction / project workflow, and organization structure
+- Suggested resources to augment Machine Learning knowledge
+- Agreed on using R/RStudio for analysis and write-up, perhaps integrate Python if needed (maybe reticulated?)
+- Set meeting dates and times to keep on track
+- Improved workflow task list
+- [Agenda needed for other meetings?]
+
