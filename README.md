@@ -49,19 +49,24 @@ README.md
   
 ## Task List  
   
-1. Collaboration Orientation  
-2. Independent Exploration with Item Analysis  
-3. Independent Literature Review  
->**4. Planning Meeting**  
-5. Data Management, Pre-processing, & Cleaning  
+>**1. Collaboration Orientation**  
+2. Independent Exploration with Item Analysis
+3. Data Management, Pre-processing, & Cleaning (Create Data Dictionary with Comments / Same Script)   
+4. Independent Literature Review  
+>**4. Planning Meeting - March 30 @ 9-11AM**  
+5. Data Management, Pre-processing, & Cleaning II  
 6. Cooperative Interrogation  
-7. Data Management, Pre-processing, & Cleaning II  
->**8. Planning Meeting**  
+7. Data Management, Pre-processing, & Cleaning III  
+>**8. Planning Meeting - April 2 @ 4PM**  
 9. Model Fitting  
 10. Diagnostics  
 11. Estimation & Inference  
->**12. Planning Meeting**  
+>**12. Planning Meeting - April 9 @ 3-4PM**  
 13. Interpretation & Conclusions  
 14. Reflection & Review  
 15. Communication  
->**16. Final Meeting**  
+>**16. Final Meeting - April 13-14 TBD**  
+
+
+## Running Questions  
+- Outside data sources?
