@@ -29,13 +29,16 @@ library(dlookr)
 library(tidyverse)
 
 train %>%
-  eda_report(target = Default_ind, output_format = "pdf", output_file = "WF_train_EDA.pdf")
+  eda_report(target = Default_ind, output_format = "pdf", 
+             output_file = "WF_train_EDA_ID.pdf")
 
 
 test %>%
-  eda_report(target = Default_ind, output_format = "pdf", output_file = "WF_test_EDA.pdf")
+  eda_report(target = Default_ind, output_format = "pdf", 
+             output_file = "WF_test_EDA_ID.pdf")
 
 
 valid %>%
-  eda_report(target = Default_ind, output_format = "pdf", output_file = "WF_valid_EDA.pdf")
+  eda_report(target = Default_ind, output_format = "pdf", 
+             output_file = "WF_valid_EDA_ID.pdf")
 
