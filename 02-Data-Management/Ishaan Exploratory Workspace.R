@@ -34,9 +34,7 @@ for(i in 1:(ncol(valid)-1)){
 
 valid$out = as.factor(as.character(valid$Default_ind))
 
-a = target_by(train, "out")
-b = relate(a, uti_card)
-plot(b)
+
 library(dlookr)
 library(tidyverse)
 
