@@ -1,6 +1,6 @@
 # UGA-Data-Science-Competition
 
-This repository contains the files for the University of Georgia Data Science Competition in partnership with Wells Fargo. See ("./Information")[https://github.com/daileyco/UGA-Data-Science-Competition/tree/main/00-Information] for more detailed documents. 
+This repository contains the files for the University of Georgia Data Science Competition in partnership with Wells Fargo. See ["./Information"](https://github.com/daileyco/UGA-Data-Science-Competition/tree/main/00-Information) for more detailed documents. 
 
 This `README` document outlines the team members, the organization of the repository, overall project workflow, and minutes from team meetings. 
 
