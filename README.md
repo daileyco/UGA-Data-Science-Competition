@@ -12,7 +12,7 @@ This `README` document outlines the team members, the organization of the reposi
 ## Team Members & Affiliations  
   
 [Cody Dailey](https://daileyco.github.io/), Department of Epidemiology and Biostatistics  
-Ishaan Dave, Department of Epidemiology and Biostatistics  
+[Ishaan Dave](https://github.com/ishaandave), Department of Epidemiology and Biostatistics  
 [Yang Ge](https://yangepi.github.io/), Department of Epidemiology and Biostatistics  
 [Vipul Shinde](https://github.com/Vipul-15), Department of Computer Science  
   
