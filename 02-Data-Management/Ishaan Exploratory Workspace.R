@@ -79,9 +79,13 @@ colnames(corrs_num_num$r) = c("Total Credit Debt", "Average Card Debt", "Credit 
                               "Utili. on Accounts", "Credit Products >50% Utili.", 
                               "Max Credit Limit Utili.", "Credit Cards >50% Utili.", 
                               "Income")
+setwd("03-Exploratory-Analyses")
 
+png(file = "corrMatrixNumNum_ID.png")
 corrplot(corrs_num_num$r, type = "upper", order = "FPC", diag = F, 
          tl.col = "black", tl.srt = 45, method = "circle", outline=T)
+
+dev.off()
 
 
   fp <- ggplot(corrs, aes(row, column)) + 
