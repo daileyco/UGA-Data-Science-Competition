@@ -53,4 +53,50 @@ library(tidyverse)
 
   eda_report(valid, target = out, output_dir = "./../../03-Exploratory-Analyses/", output_format = "pdf", 
              output_file = "WF_valid_EDA_ID.pdf")
+  
+  library(Hmisc)
+corrs_num_num = rcorr(as.matrix(train[,c(1:5,9,14:17,19)]))
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+  )
+}
+corrs = flattenCorrMatrix(corrs_num_num$r, corrs_num_num$P)
+
+library(corrplot)
+rownames(corrs_num_num$r) = c("Total Credit Debt", "Average Card Debt", "Credit Age", 
+                              "Good Credit Age", "Card Age", "Credit Amount Past Due", 
+                              "Utili. on Accounts", "Credit Products >50% Utili.", 
+                              "Max Credit Limit Utili.", "Credit Cards >50% Utili.", 
+                              "Income")
+
+colnames(corrs_num_num$r) = c("Total Credit Debt", "Average Card Debt", "Credit Age", 
+                              "Good Credit Age", "Card Age", "Credit Amount Past Due", 
+                              "Utili. on Accounts", "Credit Products >50% Utili.", 
+                              "Max Credit Limit Utili.", "Credit Cards >50% Utili.", 
+                              "Income")
+
+corrplot(corrs_num_num$r, type = "upper", order = "FPC", diag = F, 
+         tl.col = "black", tl.srt = 45, method = "circle", outline=T)
+
+
+  fp <- ggplot(corrs, aes(row, column)) + 
+  geom_tile(aes(fill = cor), colour = "white") + 
+  scale_fill_gradient2(low = "steelblue3", mid = "lightgray", high = "firebrick3")+
+  theme_grey(base_size = 14) + 
+  scale_x_discrete(expand = c(0, 0)) + scale_y_discrete(expand = c(0, 0)) +
+  geom_text(aes(label = round(cor, 3)), size = 3.5) +
+  labs(title = "Partial Correlation Matrix",
+       x = "Outputs", 
+       y = "Varied Inputs") +
+  labs(fill = "Correlation") + theme_bw() + 
+  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"), 
+  axis.text.x = element_text(angle = 45, hjust=1, vjust = 1))
+
+p
 
