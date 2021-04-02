@@ -158,3 +158,10 @@ png(file = "tempCorrPlot_ID.png", width=800, height=800, pointsize = 10)
 corrplot(a$r, type = "upper", order = "FPC", diag = F, 
          tl.col = "black", tl.srt = 45, method = "circle", outline=T)
 dev.off()
+
+
+
+
+for(j in 1:ncol(test)){
+print(c(names(test)[j], tapply(test[,j], train$States, median, na.rm = T )))
+}
