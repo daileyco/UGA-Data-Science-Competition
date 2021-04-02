@@ -140,3 +140,41 @@ Each team member will independently explore the data / project to get a sense of
 #### To-do before next meeting
 
 Each team member has been tasked with specific components of project. **Yang** will create some figures to describe variables with respect to the broader groupings. **Vipul** will initiate the background of the write-up with particular attention to descriptions and importance of the variables included in the data. **Ishaan** and **Cody** will create descriptive tables, calculate "correlations" for an association matrix, and further explore the "cost" function. 
+
+
+
+### April 2
+
+- Discussed data standardization
+  - commented on variables with extreme values and their potential impacts on regression
+    - conditional distributions, too (zero-inflation, hurdle)
+  - using means to center data, standard deviations to scale
+    - other options using more robust measures of centrality, dispersion?
+  - using training means & standard deviations when processing validation and test datasets
+  - done for continuous variables, but not for integers
+  - effects on estimate interpretations
+- Correlation matrix for predictors
+  - figure for exploratory analysis
+  - utility of factor analysis
+  - correlation calculations for non-continuous data
+- Model fitting
+  - logistic
+    - variance inflation factors for feature selection
+    - still, how to incorporate validation data?
+    - assessing influence of observations
+  - machine learning
+    - conceptual approach of classification and regression tree seemed useful for considering data structures (so, random forest)
+    - hyperparameters and tuning
+    - custom objective function, perhaps using hybrid of "cost" and more traditional sums of squares
+
+#### To-do before next meeting
+
+- Finalize Table 1, correlation matrix. 
+- Conduct factor analysis. 
+- Explore variance inflation from logistic regression. 
+- Explore random forest fitting and hyperparameter tuning. 
+- Finalize exploratory analysis. 
+- Finalize model fits. 
+- Explore comparisons of models and fits: confusion matrices and "cost". 
+- Explore interpretations and addressing questions in prompt (e.g., explaining declined result). 
+- Outline report.
