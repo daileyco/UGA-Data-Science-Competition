@@ -56,6 +56,7 @@ library(tidyverse)
   
   library(Hmisc)
 corrs_num_num = rcorr(as.matrix(train[,c(1:5,9,14:17,19)]))
+
 flattenCorrMatrix <- function(cormat, pmat) {
   ut <- upper.tri(cormat)
   data.frame(
@@ -81,14 +82,14 @@ colnames(corrs_num_num$r) = c("Total Credit Debt", "Average Card Debt", "Credit 
                               "Income")
 setwd("./../../03-Exploratory-Analyses")
 
-png(file = "corrMatrixNumNum_ID.png")
+# png(file = "corrMatrixNumNum_ID.png")
 corrplot(corrs_num_num$r, type = "upper", order = "FPC", diag = F, 
          tl.col = "black", tl.srt = 45, method = "circle", outline=T)
 
-dev.off()
+# dev.off()
 
 
-  fp <- ggplot(corrs, aes(row, column)) + 
+  p <- ggplot(corrs, aes(row, column)) + 
   geom_tile(aes(fill = cor), colour = "white") + 
   scale_fill_gradient2(low = "steelblue3", mid = "lightgray", high = "firebrick3")+
   theme_grey(base_size = 14) + 
@@ -104,3 +105,56 @@ dev.off()
 
 p
 
+
+
+
+
+
+
+
+
+library(Hmisc)
+corrs_num_cat = rcorr(as.matrix(train[,c(1:5,9,14:17,19)]))
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+  )
+}
+corrs = flattenCorrMatrix(corrs_num_num$r, corrs_num_num$P)
+
+
+
+
+
+temp = test[complete.cases(test), c(1:19)]
+a = rcorr(as.matrix(temp))
+
+
+
+corrs_all = flattenCorrMatrix(a$r, a$P)
+rownames(a$r) = c("Total Credit Debt", "Average Card Debt", "Credit Age", 
+                   "Good Credit Age", "Card Age", "Credit Product Delinquent (12 mo)",
+                  "Credit Product Delinquent (6 mo)",  "Mortgage Past Due (<6 mo)", 
+                  "Credit Amount Past Due", "# Credit Inqs (12 mo)", "# Credit Inqs (24 mo)",
+                  "# Credit Cards  (36 mo)", "# Auto Loans (36 mo)", 
+                                              "Utili. on Accounts", "Credit Products >50% Utili.", 
+                                              "Max Credit Limit Utili.", "Credit Cards >50% Utili.", 
+                  "Existing Account","Income")
+
+colnames(a$r) = c("Total Credit Debt", "Average Card Debt", "Credit Age", 
+                  "Good Credit Age", "Card Age", "Credit Product Delinquent (12 mo)",
+                  "Credit Product Delinquent (6 mo)",  "Mortgage Past Due (<6 mo)", 
+                  "Credit Amount Past Due", "# Credit Inqs (12 mo)", "# Credit Inqs (24 mo)",
+                  "# Credit Cards  (36 mo)", "# Auto Loans (36 mo)", 
+                  "Utili. on Accounts", "Credit Products >50% Utili.", 
+                  "Max Credit Limit Utili.", "Credit Cards >50% Utili.", 
+                  "Existing Account","Income")
+
+png(file = "tempCorrPlot_ID.png", width=800, height=800, pointsize = 10)
+corrplot(a$r, type = "upper", order = "FPC", diag = F, 
+         tl.col = "black", tl.srt = 45, method = "circle", outline=T)
+dev.off()
