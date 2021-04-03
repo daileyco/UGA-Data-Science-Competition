@@ -160,6 +160,10 @@ corrplot(a$r, type = "upper", order = "FPC", diag = F,
 dev.off()
 
 
+png(file = "tempCorrPlot_ID2.png", width=10, height=7, units = "in", res = 600)
+corrplot(a$r, type = "upper", order = "FPC", diag = F, 
+         tl.col = "black", tl.srt = 45, method = "circle", outline=T)
+dev.off()
 
 
 for(j in 1:ncol(test)){
