@@ -4,6 +4,8 @@
 ##
 ### It recodes the data to appropriate data types (i.e., class())
 ###
+### It uses randomForest::rfImpute() to impute missing data (default arguments)
+###
 ### It standardized the continuous data by centering (i.e., subtracting mean) and scaling (i.e., dividing by standard deviation)
 ####
 #### For consistency, the data for Validation and Testing are standardized using the means and standard deviations for the Training data
@@ -16,7 +18,7 @@
 
 
 # load packages
-my.packages <- c("dplyr", "magrittr")
+my.packages <- c("dplyr", "magrittr", "randomForest", "parallel", "doParallel")
 lapply(my.packages, library, character.only=T)
 
 
@@ -115,7 +117,19 @@ clean.Data <- function(the.file){
   
   the.data.stdz <- standardize.Data(the.data.recode, train.means, train.sds)
   
-  return(list(file = the.file, clean = the.data.recode, standardized = the.data.stdz))
+  
+  cl <- makePSOCKcluster(4)
+  registerDoParallel(cl)
+  the.data.imputed <- rfImpute(x = the.data.recode[,-which(names(the.data.recode)=="Default_ind")], 
+                               y = the.data.recode[, "Default_ind"])
+  stopCluster(cl)
+  
+  names(the.data.imputed)[1] <- "Default_ind"
+  the.data.imputed <- the.data.imputed[,c(2:ncol(the.data.imputed), 1)]
+  
+  the.data.imputed.stdz <- standardize.Data(the.data.imputed, train.means, train.sds)
+  
+  return(list(file = the.file, clean = the.data.recode, standardized = the.data.stdz, imputed = the.data.imputed, imputed.standardized = the.data.imputed.stdz))
 }
 
 
