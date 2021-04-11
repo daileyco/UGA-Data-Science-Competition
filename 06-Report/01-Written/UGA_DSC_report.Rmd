@@ -1,14 +1,31 @@
 ---
-title: "Untitled"
-author: "Cody Dailey"
+title: "Credit Lending Decisions"
+subtitle: 2021 University of Georgia Data Science Competition
+author: 
+  - Cody Dailey[^epidbios]
+  - Ishaan Dave^1^
+  - Yang Ge^1^
+  - Vipul Shinde[^compsci]
+
 date: "4/2/2021"
-output: html_document
+
+output: 
+  bookdown::pdf_document2:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    
+
 editor_options: 
   chunk_output_type: console
 ---
 
+[^epidbios]:Department of Epidemiology and Biostatistics
+[^compsci]:Department of Computer Science
+
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ```{r}
@@ -18,6 +35,171 @@ lapply(my.packages, library, character.only=T)
 
 
 $$C= C_0 + C_{TP}*TP + C_{FP}*FP + C$$
+
+
+
+
+# Preface {-}
+
+
+
+# (PART) Background {-}
+
+# Competition Prompt
+
+# Overview of Sectioning
+
+
+
+
+
+
+
+
+
+# (PART) Bank XYZ and Credit Bureaus' Credit Data {-}
+
+# Univariate Descriptions
+
+Table 1
+
+# Exploratory Data Analysis
+
+## Methods
+
+## Results
+
+Figure Correlation Matrix
+
+
+
+
+
+
+# (PART) Modeling and Predicting Probabilities of Account Default
+
+# Logistic Regression
+
+## Methods
+
+
+## Results
+
+
+Figure Adaptive LASSO
+- Training --> ROC & Cost on training and validation datasets
+
+Table
+- Coefficients / ORs / Probabilities
+- Confusion Matrices
+
+
+# Random Forest
+
+## Methods
+
+
+## Results
+
+Figure
+- Training --> ROC & Cost on training and validation datasets
+- Variable importance
+- Proximity?
+- "Best" tree?
+
+Table
+- Confusion matrices
+
+
+
+# Model Comparisons
+
+
+## Accuracy
+
+Figure 
+- ROC & Cost on test data
+
+## Other Considerations
+
+Transparency
+...
+
+
+## Selection
+
+
+
+
+
+
+# (PART) Discussion
+
+# Scenario Application
+
+***Do customers who already have an account with Bank XYZ receive any favorable treatment?***
+
+Was it picked up in any of our models?
+What advantage might it have that wouldn't be evident in data?
+
+***Suppose a credit card application is rejected, how would you explain the results to the customer?***
+
+For TP and FP, does it differ? 
+
+Figure
+- "Tipping point" plots (if we took any value from specific applicant and replaced with mean of someone who would have been approved, does it change probability enough to cross threshold? iterative combinations of strongest more variable predictors or z-score of particular customer?)
+
+
+
+
+
+
+# Conclusions
+
+Dilemma of basing credit approvals on default data (inherently missing approvals that should have been made, identifying only those that shouldn't have been)
+
+
+
+# References
+
+
+
+
+
+# (APPENDIX) Appendix {-}
+
+## Extended Exploratory Data Analysis
+
+
+
+
+## Training Details
+
+### Class Imbalance
+
+### Cutoff Thresholds
+
+
+
+
+## Cost Rationale
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
