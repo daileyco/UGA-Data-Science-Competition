@@ -91,7 +91,8 @@ recode.Data <- function(the.data){
                     auto_open_.36_month_num = as.integer(auto_open_.36_month_num), 
                     ind_acc_XYZ = factor(ind_acc_XYZ, levels = c(1,0), labels = c("Account w/ XYZ", "No Account")), 
                     Default_ind = factor(Default_ind, levels = c(1,0), labels = c("Defaulted", "Did Not Default")), 
-                    States = factor(States, levels = c("AL", "FL", "GA", "LA", "MS", "NC", "SC")))
+                    States = factor(States, levels = c("AL", "FL", "GA", "LA", "MS", "NC", "SC"))) %>%
+                mutate(Default_ind = relevel(Default_ind, ref = "Did Not Default"))
   
   return(the.data)
 }
