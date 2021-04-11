@@ -1,0 +1,32 @@
+---
+title: "Untitled"
+author: "Cody Dailey"
+date: "4/2/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+my.packages <- c("dplyr", "flextable")
+lapply(my.packages, library, character.only=T)
+```
+
+
+$$C= C_0 + C_{TP}*TP + C_{FP}*FP + C$$
+
+
+
+# Table 1
+
+
+```{r}
+
+
+
+
+```

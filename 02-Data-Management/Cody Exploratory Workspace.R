@@ -57,3 +57,173 @@ tapply(train$avg_card_debt, list(train$Default_ind, train$delinquent), median)
 tapply(train$avg_card_debt, list(def=train$Default_ind, del=train$delinquent), function(x){exp(mean(log(x)))})
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# load packages
+my.packages <- c("dplyr", "magrittr", "purrr", "flextable")
+lapply(my.packages, library, character.only=T)
+
+
+# load data
+load("./01-Data/01-Clean/all_data.rds")
+
+
+## extract recoded datasets
+clean.data <- lapply(all.data, function(x){pluck(x, "clean")})
+
+the.data <- clean.data[[2]]
+
+
+
+the.vars <- names(the.data)[-which(names(the.data)%in%c("Default_ind", "States"))]
+
+
+the.data.matrix <- sapply(the.data[,the.vars], as.numeric) %>% as.matrix()
+the.data.matrix <- the.data.matrix[complete.cases(the.data.matrix),]
+
+
+
+fit.Factor.analysis <- function(the.data.matrix, n.factors){
+  the.factor.analysis <- factanal(the.data.matrix, factors = n.factors)
+  
+  the.evaluation.criteria <- cbind(
+    "N Factors" = the.factor.analysis$factors, 
+    "Chi-square Statistic" = the.factor.analysis$STATISTIC, 
+    "Degrees of Freedom" = the.factor.analysis$dof, 
+    p = the.factor.analysis$PVAL
+  ) %>%
+    as.data.frame()
+  
+  return(the.evaluation.criteria)
+}
+
+
+
+explore.fa <- lapply(1:4, function(x){
+  fit.Factor.analysis(the.data.matrix, x)
+}) 
+
+
+
+explore.fa.table <- bind_rows(explore.fa)
+
+
+fit.Factor.analysis(the.data.matrix, 5)
+
+
+
+
+the.cor.mat <- cor(the.data.matrix, use = "pairwise.complete.obs")
+
+
+factanal(covmat = the.cor.mat, factors = 1)
+factanal(covmat = the.cor.mat, factors = 2)
+factanal(covmat = the.cor.mat, factors = 3)
+factanal(covmat = the.cor.mat, factors = 4)
+factanal(covmat = the.cor.mat, factors = 5)
+
+
+
+
+
+train.data <- clean.data[[2]]
+validation.data <- clean.data[[3]]
+
+
+
+dir("./01-Data/01-Clean")
+train.data.impute <- rfImpute(x = train.data[,-which(names(train.data)=="Default_ind")],
+                              y = train.data[,"Default_ind"])
+
+save(train.data.impute, file = "./01-Data/01-Clean/train_impute.rds")
+
+set.seed(74)
+rf.fit <- randomForest(x = train.data.impute[,-1], 
+                       y = train.data.impute[,1], 
+                       
+                       # xtest = validation.data[,-which(names(validation.data)=="Default_ind")], 
+                       # ytest = validation.data[,"Default_ind"], 
+                       
+                       ntree = 10, 
+                       mtry = 4,
+                       
+                       replace=TRUE, 
+                       classwt=c(10,1), 
+                       # cutoff, 
+                       # strata = train.data.impute[,1],
+                       # sampsize = rep(sum(train.data$Default_ind=="Defaulted"), 2),
+                       # nodesize = if (!is.null(y) && !is.factor(y)) 5 else 1,
+                       # maxnodes = NULL,
+                       importance=FALSE, 
+                       localImp=TRUE, 
+                       # nPerm=1,
+                       proximity = TRUE, 
+                       # oob.prox=proximity,
+                       # norm.votes=TRUE, 
+                       do.trace=TRUE,
+                       # keep.forest=!is.null(y) && is.null(xtest), corr.bias=FALSE,
+                       # keep.inbag=FALSE, ...
+                       # na.action = na.roughfix
+                       )
+
+
+
+rf.timing <- microbenchmark::microbenchmark()
+
+library(randomForest)
+rf.fit <- randomForest(data = the.data, ntree = 50, mtry = floor(sqrt(ncol(the.data)-1)), replace = TRUE, importance = TRUE)
+
+rf.fit
+
+varImpPlot(rf.fit)
+
+
+
+preds <- predict(rf.fit)
+
+the.data.preds <- the.data
+
+the.data.preds$prediction[which(complete.cases(the.data.preds))] <- predict(rf.fit, type = "response")
+
+the.data.preds$prediction.probs.def <- NA
+the.data.preds$prediction.probs.dnd <- NA
+
+the.data.preds[which(complete.cases(the.data.preds)), c("prediction.probs.def", "prediction.probs.dnd")] <- predict(rf.fit, type = "prob")
+
+
+pROC::roc(as.numeric(the.data.preds$Default_ind=="Defaulted"), the.data.preds$prediction)
+
+
+pROC::plot.roc(as.numeric(the.data.preds$Default_ind=="Defaulted"), the.data.preds$prediction)
+
+
+predict(rf.fit, type = "prob")
+
+
+names(preds[1:10])
+
+
+
+
+
+
+
+
