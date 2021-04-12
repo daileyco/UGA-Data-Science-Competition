@@ -25,6 +25,65 @@ the.data <- imputed.data[[2]]
 the.validation.data <- imputed.data[[3]]
 
 
+the.data.complete <- the.data[complete.cases(the.data),]
+
+
+
+
+
+
+
+
+
+
+
+
+
+# formulating the cost function 
+## use population averages, could use individuals, but would be very involved
+
+## averages of the average monthly card debt
+## harmonic.mean.avg.card.debt <- tapply(the.data.complete$avg_card_debt, the.data.complete$Default_ind, function(x){length(x) / sum(1/x)})
+
+geometric.mean.avg.card.debt <- tapply(the.data.complete$avg_card_debt, the.data.complete$Default_ind, function(x){exp(mean(log(x)))})
+
+## average of the number of non mortgage deliquencies in past 12 months , divided by 12 to get monthly
+quadratic.mean.n.delinq <- tapply(the.data.complete$non_mtg_acc_past_due_12_months_num, the.data.complete$Default_ind, function(x){sqrt(mean(x^2))/12})
+
+## proportion of avg monthly debt for bank profit 
+### conservative? small to account for avg debt being spread across all cards (unknown number, best we have is # cards opened in last 36 months, many zeros)
+profit.merchant <- 1/100
+profit.interest <- 1/10
+
+
+## actual function
+calculate.Cost <- function(TP, FP, TN, FN){
+  
+  
+  cost <- TP * geometric.mean.avg.card.debt["Defaulted"] - FP * (geometric.mean.avg.card.debt["Did Not Default"]*(profit.merchant+profit.interest*quadratic.mean.n.delinq["Did Not Default"])) + TN * (geometric.mean.avg.card.debt["Did Not Default"]*(profit.merchant+profit.interest*quadratic.mean.n.delinq["Did Not Default"])) - FN * geometric.mean.avg.card.debt["Defaulted"]
+  
+  
+  return(cost)
+  
+}
+
+
+# works as designed
+## calculate.Cost(TP = 0, FP = 0, TN = 0, FN = 1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -52,7 +111,13 @@ rf.tuning.grid <- bind_rows(
 
 
 
-paste0("./05-Model-Fitting/02-Machine-Learning/01-Models/rf_fit", .index, ".rds")
+
+
+# identify model files
+
+rf.files <- list.files("./05-Model-Fitting/02-Machine-Learning/01-Models", pattern = "rf_fit.*[.]rds", full.names = TRUE)
+rf.files.info <- file.info(rf.files)
+rf.files <- rf.files[order(rf.files.info$ctime)]
 
 
 
@@ -60,6 +125,50 @@ paste0("./05-Model-Fitting/02-Machine-Learning/01-Models/rf_fit", .index, ".rds"
 
 
 
+evaluate.Random.Forests <- function(.index){
+
+  
+the.file <- rf.files[.index]
+load(the.file)
+
+
+the.object <- gsub(".*/(rf_fit[0-9]+)[.]rds", "\\1", the.file)
+the.params <- rf.tuning.grid[.index,]
+the.probs <- predict(get(the.object), type = "prob") %>% as.data.frame()
+
+the.truth <- the.data.complete$Default_ind
+the.roc <- roc(the.truth, the.probs$Defaulted, levels = c("Did Not Default", "Defaulted"), direction = "<")
+
+the.params$auc <- the.roc$auc
+the.metrics <- data.frame(threshold = the.roc$thresholds, sensitivity = the.roc$sensitivities, specificity = the.roc$specificities) %>%
+                mutate(youden = sensitivity + specificity - 1, 
+                       d2c = sqrt((1-sensitivity)^2+(1-specificity)^2))
+
+
+
+cl <- makePSOCKcluster(4)
+registerDoParallel(cl) 
+
+clusterExport(cl, varlist = c("the.probs", "the.truth"), envir = environment())
+
+the.predictions <- parLapply(cl, the.metrics$threshold, function(.threshold){
+  require(dplyr)
+  these.predictions <- factor(ifelse(the.probs$Defaulted>.threshold, "Defaulted", "Did Not Default"), levels = c("Defaulted", "Did Not Default")) %>% 
+    relevel(., ref = "Did Not Default")
+  
+  the.df <- data.frame(truth = the.truth, prediction = these.predictions) %>% 
+              summarise(
+                TP = sum(truth == "Defaulted" & prediction == "Defaulted"), 
+                FP = sum(truth == "Did Not Default" & prediction == "Defaulted"), 
+                TN = sum(truth == "Did Not Default" & prediction == "Did Not Default"), 
+                FN = sum(truth == "Defaulted" & prediction == "Did Not Default"), 
+                n = n()
+                )
+  return(the.df)
+})
+
+
+stopCluster(cl)
 
 
 
@@ -67,17 +176,36 @@ paste0("./05-Model-Fitting/02-Machine-Learning/01-Models/rf_fit", .index, ".rds"
 
 
 
+the.metrics <- bind_cols(the.metrics, bind_rows(the.predictions)) %>%
+                mutate(profit = calculate.Cost(TP, FP, TN, FN))
+
+
+# the most profitable threshold
+.index.profit <- which(the.metrics$profit==the.metrics$profit[which.max(the.metrics$profit)])
+# the most accurate threshold
+.index.accurate <- which(the.metrics$d2c==the.metrics$d2c[which.min(the.metrics$d2c)])
+
+
+the.best.thresholds <- bind_rows(the.metrics[.index.profit,], the.metrics[.index.accurate,]) %>% 
+                        bind_cols(the.params, .) %>% 
+                        mutate(Model = the.object) %>%
+                        select(Model, everything())
+
+return(the.best.thresholds)
+}
 
 
 
 
 
 
+total <- length(rf.files)
+pb <- txtProgressBar(min = 0, max = total, style = 3)
 
-
-
-
-
+model.evaluations <- lapply(1:length(rf.files), function(.index){
+  setTxtProgressBar(pb, .index);
+  evaluate.Random.Forests(.index)
+  })
 
 
 
