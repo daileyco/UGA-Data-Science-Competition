@@ -224,6 +224,51 @@ names(preds[1:10])
 
 
 
+library(doParallel)
+cl <- makePSOCKcluster(4)
+registerDoParallel(cl) 
+
+
+res <- microbenchmark::microbenchmark({
+  
+  
+  foreach(ntree=rep(1,100), .combine = randomForest::combine, 
+          .multicombine = TRUE, .packages = c("randomForest", "doParallel")) %dopar% {
+            randomForest(x = the.predictors, 
+                         y = the.data.complete[,"Default_ind"], 
+                         
+                         xtest = the.validation.predictors, 
+                         ytest = the.validation.data.complete[,"Default_ind"], 
+                         
+                         ntree = ntree, 
+                         mtry = 4,
+                         
+                         replace=TRUE, 
+                         # classwt=c(10,1), 
+                         # cutoff, 
+                         strata = the.data.complete[,"Default_ind"],
+                         sampsize = rep(sum(the.data.complete$Default_ind=="Defaulted"), 2),
+                         # nodesize = if (!is.null(y) && !is.factor(y)) 5 else 1,
+                         # maxnodes = NULL,
+                         importance=TRUE, 
+                         localImp=TRUE, 
+                         # nPerm=1,
+                         proximity = FALSE, 
+                         # oob.prox=proximity,
+                         # norm.votes=TRUE, 
+                         do.trace=TRUE,
+                         keep.forest=TRUE, 
+                         # corr.bias=FALSE,
+                         # keep.inbag=FALSE, ...
+                         # na.action = na.roughfix
+            )
+            
+          }
+  
+}, times = 10, unit = "s")
+stopCluster(cl)
+
+print(res)
 
 
 
