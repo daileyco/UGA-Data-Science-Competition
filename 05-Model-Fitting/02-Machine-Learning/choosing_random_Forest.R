@@ -373,7 +373,7 @@ the.most.profitable <- mv.profit[which(mv.profit$Model%in%the.most.accurate.auc)
 
 
 # the.chosen.few <- bind_rows(the.most.profitable.auc[which(the.most.profitable.auc$profit.pp > quantile(the.most.profitable.auc$profit.pp, 0.75)),],
-                            the.most.profitable.d2c[which(the.most.profitable.d2c$profit.pp > quantile(the.most.profitable.d2c$profit.pp, 0.75)),])
+                            # the.most.profitable.d2c[which(the.most.profitable.d2c$profit.pp > quantile(the.most.profitable.d2c$profit.pp, 0.75)),])
 # View(the.chosen.few[,c("Model", "auc", "sensitivity", "specificity", "d2c", "TP", "FP", "TN", "FN", "profit.pp")])
 
 
