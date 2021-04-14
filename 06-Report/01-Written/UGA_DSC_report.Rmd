@@ -100,7 +100,7 @@ Figure Correlation Matrix
 
 # Logistic Regression
 
-Our main outcome of interest is whether or not an individual defaults when asking for a loan. Traditionally, associations between predictors and outcome are tested individually through univariate regression models, then a subset of those covariates are selected for a multivariate regression analysis if univariate analyses yielded significant results. Given the large number of possible predictors, we suspected severe multicollinarity between some pairs of variables, and overfitting of our model. To alleviate this, we “penalized” regression coefficients to select a parsimonious set of variables that leads to similar prediction results. 
+Our main outcome of interest is whether or not an individual defaults when asking for a loan. Traditionally, associations between predictors and outcome are tested individually through univariate regression models, then a subset of those covariates are selected for a multivariate regression analysis if univariate analyses yielded significant results. Given the large number of possible predictors, we suspected severe multicollinarity between some pairs of variables, and thus, overfitting of our model. To alleviate this, we “penalized” regression coefficients to select a parsimonious set of variables that leads to similar prediction results. 
 
 
 ## Methods
@@ -110,11 +110,11 @@ In a normal logistic regression with a binary outcome, our model is defined by l
 
   (Equation 1)
 
- The second step is the LASSO step that imposes a constraint on the sum of the absolute value of the regression coefficients and uses data-dependent weights (usually the inverse of the ridge regression coefficients) to penalize regression coefficients accordingly (Equation 2). Therefore strong predictors’ coefficients are shrunk less than coefficients of weak predictors. 
+The second step is the LASSO step that imposes a constraint on the sum of the absolute value of the regression coefficients and uses data-dependent weights (usually the inverse of the ridge regression coefficients) to penalize regression coefficients accordingly (Equation 2). Therefore strong predictors’ coefficients are shrunk less than coefficients of weak predictors. 
 
   (Equation 2). 
 
-
+Continuous predictors were standardized to have mean 0 and standard deviation 1 before penalized regression was conducted. The main focus of penalized regression is predictive performance rather than uncertainty around the coefficient itself. Confidence intervals for coefficients and predicted probabilities from penalized methods are problematic because coefficients are already biased toward the null because of the inherent penalty term and not presented with regression coefficients. In the table below, we show the standardized coefficient estimates for both unpenalized logistic regression and adaptive lasso as well as the shrinkage associated with each coefficient.
 
 ## Results
 
