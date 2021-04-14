@@ -182,14 +182,14 @@ the.most.accurate.auc <- mv.profit$model.num[which(mv.profit$auc > quantile(mv.p
 the.most.profitable <- mv.profit[which(mv.profit$model.num%in%the.most.accurate.auc),]
 
 
-points(jitter((as.numeric(mv.profit$gamma[which(mv.profit$model.num=="146")]))*10, 1.5), mv.profit$profit.pp[which(mv.profit$model.num=="146")], pch = 8, cex = 5)
+# points(jitter((as.numeric(mv.profit$gamma[which(mv.profit$model.num=="146")]))*10, 1.5), mv.profit$profit.pp[which(mv.profit$model.num=="146")], pch = 8, cex = 5)
 
 
 the.chosen.one <- the.most.profitable[which.min(the.most.profitable$d2c),]
 
 
 
-
+save(the.chosen.one, file = "./05-Model-Fitting/01-Logistic-Regression/the-chosen-one.rds")
 
 
 

@@ -139,7 +139,7 @@ metrics <- bind_rows(metrics.training %>% mutate(dataset = "training"),
             mutate_at(4:7, as.factor)
 
 
-metrics.profit %<>% mutate(profit.pp = profit / n )
+# metrics.profit %<>% mutate(profit.pp = profit / n )
 
 
 metrics.model.auc <- metrics %>% group_by(dataset) %>% filter(!duplicated(Model)) %>% ungroup() %>% select(1:8)
@@ -384,6 +384,7 @@ the.most.profitable <- mv.profit[which(mv.profit$Model%in%the.most.accurate.auc)
 
 the.chosen.one <- the.most.profitable[which.min(the.most.profitable$d2c),]
 
+save(the.chosen.one, file="./05-Model-Fitting/02-Machine-Learning/the-chosen-one.rds")
 
 
 
