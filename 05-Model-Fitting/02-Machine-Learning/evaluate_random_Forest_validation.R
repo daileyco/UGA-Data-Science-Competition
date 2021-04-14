@@ -134,7 +134,7 @@ load(the.file)
 
 the.object <- gsub(".*/(rf_fit[0-9]+)[.]rds", "\\1", the.file)
 the.params <- rf.tuning.grid[.index,]
-the.probs <- predict(get(the.object), type = "prob") %>% as.data.frame()
+the.probs <- predict(get(the.object), the.data.complete[,-which(names(the.data.complete)=="Default_ind"], type = "prob") %>% as.data.frame()
 
 the.truth <- the.data.complete$Default_ind
 the.roc <- roc(the.truth, the.probs$Defaulted, levels = c("Did Not Default", "Defaulted"), direction = "<")
