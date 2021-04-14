@@ -207,8 +207,8 @@ model.evaluations <- lapply(1:length(rf.files), function(.index){
   evaluate.Random.Forests(.index)
   })
 
-
-
+dir("./05-Model-Fitting/02-Machine-Learning")
+save(model.evaluations, file = "./05-Model-Fitting/02-Machine-Learning/model_metrics_training_oob_cost2.rds")
 
 
 # rf.fit
