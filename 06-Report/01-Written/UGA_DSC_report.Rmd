@@ -326,9 +326,16 @@ Transparency
 \newpage
 # Discussion {-}
 
+The two models developed allows Bank XYZ to predict who may or may not potentially default when asking for a loan. The first method, an adaptive LASSO with logistic regression allows us to shrink parameters that are not important in predicting whether or not one will default. The 2 stage approach effectively handles feature selection and shrinkage simultaneously to remedy multicollinearity suspected between variables. The second model, the random forest, allows us to calculate several decision trees that ultimately best classify an individual's default decision. In addition to high predictive performance, the random forest allows us to to visualize variable importance, which tells XYZ how much each feature contributes to the prediction.  
+
+Predictive performance for each model was examined by comparing confusion matrices and calculating percentage of those correctly classified. In addition, a cost function was implemented where individuals were assigned a monetary value to allow Bank XYZ to see how much money would be gained or lost depending on how the model classified them. 
+
+
 # Scenario Application {#explain}
 
 ***Do customers who already have an account with Bank XYZ receive any favorable treatment?***
+
+Given the way our logistic regression and random forest models are defined, we are able to say that those who already have an account with Bank XYZ do not receive favorable treatment. This is seen by looking at our variable importance plots and the variable indicating an existing account is the 4th from the bottom and also shows a value of nealy 0 importance, regardless of outcome group.
 
 Was it picked up in any of our models?
 What advantage might it have that wouldn't be evident in data?
