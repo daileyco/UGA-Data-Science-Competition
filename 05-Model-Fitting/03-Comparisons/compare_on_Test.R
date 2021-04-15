@@ -139,7 +139,9 @@ lasso.chosen <- the.chosen.one
 
 the.alasso <- the.models[[1]]
 
+the.coefs <- coef(the.alasso, s = lasso.chosen$lambda)
 
+save(the.coefs, file = "./05-Model-Fitting/01-Logistic-Regression/lasso_coefs.rds")
 
 lasso.probs <- predict(the.alasso, x, type = "response")[,which(the.alasso$lambda==lasso.chosen$lambda)]
 
