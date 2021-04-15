@@ -40,24 +40,12 @@ knit: (
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-```
 
-```{r}
 my.packages <- c("dplyr", "flextable", "knitr")
 lapply(my.packages, library, character.only=T)
 ```
 
 
-
-
-
-```{r echo = T}
-
-dir()
-
-getwd()
-
-```
 
 
 
@@ -74,50 +62,49 @@ For more details, please see appendix (add exactly where – figure XXX).
 
 
 \newpage
-# Preface {-}
-
-
-\newpage
-# (PART) Background {-}
+# Background {-}
 
 # Competition Prompt
 
-# Overview of Sectioning
+We are expected to work as a team to develop ***credit decision models*** using the simulated datasets for Bank XYZ, to interpret the results, document findings, and present to a panel of judges. 
 
-
-
+Specifically, we are asked to   
+1. Conduct an exploratory data analysis (Section \@ref(eda))    
+2. Develop and fit a logistic regression model (Section @\ref(logistic))    
+3. Develop an additional machine learning (ML) model: random forest, gradient boosting, or feedforward neural network (Section \@ref(rf))    
+4. Compare the logistic regression model with ML model, select one for credit approval, and describe the reason for our selection (Section \@ref(compare))    
+5. Answer the following questions: (Section \@ref(explain))     
+  - Do customers who already have an account with the financial institution receive any favorable treatment in our model?      
+  - Suppose a credit card application is rejected using our model and the applicant asks us to provide an explanation as to why it was rejected. How would we explain the results to the customer?     
 
 
 
 
 
 \newpage
-# (PART) Bank XYZ and Credit Bureaus' Credit Data {-}
+# Bank XYZ and Credit Bureaus' Credit Data {-}
 
-# Univariate Descriptions
+# Exploratory Data Analysis {#eda}
 
-Table \@ref(tab:table1)
+## Methods
+
+Data were summarized using means and standard deviations or frequency and percentages as appropriate. For discrete count data, data were summarized using medians and interquartile range. Additional exploratory data analyses were conducted to examine normality of continuous variables and cross-tabulations of categorical variables between outcome levels. Bivariate relationships were examined using correlations (point-biserial between categorical and continuous, and Pearson correlation between continuous variables) and plotted in a correlation matrix (darker colors represent stronger correlations). 
+
+
+# Results
+
+
+Table \@ref(tab:table1) shows data summaries for each variable in the training dataset stratified by the Default indicator. 
 
 ```{r table1}
 load("../../04-Data-Visualization/01-Tables/table_1s.rds")
 
 # training data
 ## need to remake tables and round their numeric values
-flextable(table.1s[[2]]) %>% set_caption("Descriptive Statistics of Training Data")
+flextable(table.1s[[2]][-which(table.1s[[2]]$Levels=="Missing" & table.1s[[2]]$Defaulted=="0 (0)" & table.1s[[2]]$`Did Not Default`=="0 (0)"),] %>% select(-Test)) %>% set_caption("Descriptive Statistics of Training Data") %>% fontsize(part = "all", size = 10) %>% autofit()
 
 ```
 
-
-
-# Exploratory Data Analysis
-
-## Methods
-
-Data were summarized using means and standard deviations or frequency and percentages as appropriate. For discrete count data, data were summarized using medians and interquartile range. Additional exploratory data analyses were conducted to examine normality of continuous variables and cross-tabulations of categorical variables between outcome levels. Bivariate relationships were examined using correlations (point-biserial between categorical and continuous, and Pearson correlation between continuous variables) and plotted in a correlation matrix (darker colors represent stronger correlations). To predict whether or not individuals will default, 2 models were fit: the first was an adaptive LASSO logistic regression model, and the second was a random forest machine learning algorithm for classification. Their predictive performances were compared by examining differences in area under the curve (AUC) and receiver operating curves (ROC), and the financial impact of correct (or incorrect) classification was assessed by assigning a cost to correctly or incorrectly classifying an individual. 
-
-
-
-## Results
 
 Figure Correlation Matrix
 
@@ -126,9 +113,32 @@ Figure Correlation Matrix
 
 
 \newpage
-# (PART) Modeling and Predicting Probabilities of Account Default
+# Modeling and Predicting Probabilities of Account Default {-}
 
-# Logistic Regression
+To predict whether or not individuals will default, 2 classes of models were fit: the first was an adaptive LASSO logistic regression model, and the second was a random forest machine learning algorithm for classification. Each model class was fit numerous times on the training data in an exploration of model-specific hyperparameters. All models were then used to classify the observations within the validation dataset. Within each model class, predictive performances were compared by examining differences in area under the curve (AUC) from the receiver operating characteristic curves (ROC). Of the top performing models (AUC in 2.5 percentile), probability thresholds were set according to the financial impact of correct (or incorrect) classification via assigning costs to correctly or incorrectly classifying an individual (Equation \@ref(eq:cost)). 
+
+\begin{equation}
+  Profit = TP \times 0 + FP \times 0 + TN \times \mu_1 (p_{merchant} + p_{interest} \times \mu_{delinquencies}) - FN \times \mu_2
+  (\#eq:cost)
+\end{equation}
+
+where: TP, FP, TN, and FN refer to the frequencies of true positives, false positives, true negatives, and false negatives, respectively; $\mu_1$ and $\mu_2$ are the average monthly credit card debt for an individuals who did not default or who defaulted, respectively; $p_{merchant}$ and $p_{interest}$ are the profit margins for a credit lendor with respect to purchases made (merchant) and interest from late payments (interest); and $\mu_{delinquencies}$ is the average number of delinquencies.[^estimations] 
+
+{^estimations]: A positive in this sense refers to the prediction of Default, where a true positive refers to someone we predicted and who in fact defaulted. The true positives and the false positives were assumed to not have contributed in profit calculations as they represent credit denials (hence zeros in the equation). The average monthly credit card debt for an individual was calculated from the validation dataset using the variable `avg_card_debt` and its geometric mean for the those who did not default ($\mu_1 = \$13097.04$) and defaulted ($\mu_2 = \$13525.80$), separately. We assumed the profit margins on purchases ($p_{merchant}$) and interest payments ($p_{interest}$) to be 1% and 10% of the average monthly credit card debt. The average number of deliquencies ($\mu_{delinquencies} = 0.024$) was calculated using the validation dataset and the `non_mtg_acc_past_due_12_months_num` variable and its quadratic mean for those who did not default divided by 12 (to get monthly). We understand the `avg_card_debt` variable can correspond to many credit cards, but we did not feel capable of estimating an individual's total number of credit cards to correct for this. Also, these calculations were made at the population level and, therefore, assumed the same values for each credit applicant; although, it may be possible to reconfigure to incorporate an individual's data. 
+
+Finally, with a single threshold chosen for each model, the most accurate model (as determined via the distance to corner metric, Equation \@ref(eq:d2c)) was chosen from each model class. 
+
+\begin{equation}
+  Distance~to~corner~ (d2c) = \sqrt{(1-sensitivity)^2 + (1-specificity)^2}
+  (\#eq:d2c)
+\end{equation}
+
+The results presented in this section pertain to model fits on the validation data. 
+
+
+
+
+# Logistic Regression {#logistic}
 
 Our main outcome of interest is whether or not an individual defaults when asking for a loan. Traditionally, associations between predictors and outcome are tested individually through univariate regression models, then a subset of those covariates are selected for a multivariate regression analysis if univariate analyses yielded significant results. Given the large number of possible predictors, we suspected severe multicollinarity between some pairs of variables, and thus, overfitting of our model. To alleviate this, we “penalized” regression coefficients to select a parsimonious set of variables that leads to similar prediction results. 
 
@@ -190,7 +200,7 @@ include_graphics("../../04-Data-Visualization/02-Figures/alasso_models_profit.pn
 
 
 
-# Random Forest
+# Random Forest {#rf}
 
 ## Methods
 
@@ -255,7 +265,7 @@ include_graphics("../../04-Data-Visualization/02-Figures/rf_variable_importance.
 
 
 
-# Model Comparisons
+# Model Comparisons {#compare}
 
 
 
@@ -314,9 +324,9 @@ Transparency
 
 
 \newpage
-# (PART) Discussion
+# Discussion {-}
 
-# Scenario Application
+# Scenario Application {#explain}
 
 ***Do customers who already have an account with Bank XYZ receive any favorable treatment?***
 

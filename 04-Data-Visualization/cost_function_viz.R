@@ -68,19 +68,60 @@ calculate.Cost <- function(TP, FP, TN, FN){
 
 
 
-specificity <- seq(0,1, by = 0.01)-0.5
+specificity <- seq(-1,1, by = 0.001)
 
-sensitivity <- sqrt(0.25 - specificity^2)
-sensitivity <- c(sensitivity, -1*sensitivity)
+# sensitivity <- sqrt(0.25 - specificity^2)
+
+a <- 0.5
+b <- 0.25
+
+h <- 0
+k <- 0
+
+
+sensitivity <- c(sqrt((b^2)*(1-(((specificity-h)^2)/(a^2))))+k,
+                 -1*sqrt((b^2)*(1-(((specificity-h)^2)/(a^2))))+k)
+
+# sensitivity <- c(sensitivity, -1*sensitivity)
 specificity <- rep(specificity, 2)
+
+plot(1-specificity, sensitivity, type = "o", asp = 1)
+
+xc <- 0.5 # center x_c or h
+yc <- 0.5 # y_c or k
+a <- 0.5 # major axis length
+b <- 0.5 # minor axis length
+phi <- pi/4 # angle of major axis with x axis phi or tau
+
+t <- seq(0, 2*pi, 0.001) 
+x <- xc + a*cos(t)*cos(phi) - b*sin(t)*sin(phi)
+y <- yc + a*cos(t)*sin(phi) + b*sin(t)*cos(phi)
+plot(x,y,pch=19, col='blue', asp = 1, xaxs = 'i', yaxs='r')
+
+summary(x)
+summary(y)
+
+sensitivity <- c(0,y[which(y>1-x)],1)
+specificity <- c(1,x[which(y>1-x)],0)
+
+
+
+
+which(x==max(x))
+
+
+plot(1-specificity, sensitivity, asp = 1)
+
+
 
 sensitivity <- sensitivity[which(sensitivity>(1-specificity))]
 specificity <- specificity[which(sensitivity>(1-specificity))]
 
+
+
 specificity <- specificity[order(specificity, descending = T)]
 sensitivity <- sensitivity[order(sensitivity, descending = T)]
 
-plot(sensitivity, 1-specificity, type = "o")
 
 
 library(ROC)

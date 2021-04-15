@@ -79,7 +79,12 @@ create.Summary.stats <- function(the.variable, the.data, the.method){
                     Parameter = parameter.df, 
                     p = p.value, 
                     Test = method
-                    )
+                    ) %>% 
+                  mutate(
+                    Statistic = round(as.numeric(Statistic), 2), 
+                    Parameter = round(as.numeric(Parameter), 2),
+                    p = round(as.numeric(p), 3)
+                  )
   }
   
   if(the.method == "medians"){
@@ -122,7 +127,11 @@ create.Summary.stats <- function(the.variable, the.data, the.method){
                   Parameter = NULL, 
                   p = p.value, 
                   Test = method
-                  )
+                  ) %>% 
+                mutate(
+                  Statistic = round(as.numeric(Statistic), 0),
+                  p = round(as.numeric(p), 3)
+                )
   }
   
   if(the.method == "frequencies"){
@@ -161,7 +170,12 @@ create.Summary.stats <- function(the.variable, the.data, the.method){
                     Parameter = parameter.df, 
                     p = p.value, 
                     Test = method
-                    )
+                    ) %>% 
+                  mutate(
+                    Statistic = round(as.numeric(Statistic), 2), 
+                    Parameter = round(as.numeric(Parameter), 2),
+                    p = round(as.numeric(p), 3)
+                  )
     
   }
   
