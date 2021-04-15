@@ -6,15 +6,32 @@ author:
   - Ishaan Dave^1^
   - Yang Ge^1^
   - Vipul Shinde[^compsci]
-date: "4/2/2021"
+  
+date: '`r format(Sys.Date(), "%d %B %Y")`'
+
+bibliography: ["../../00-References/references.bib"]
+biblio-style: apalike
+csl: "../../00-References/epidemiology.csl"
+link-citations: yes
+
 output: 
-  bookdown::pdf_document2:
+  bookdown::word_document2:
     
     toc: true
     toc_depth: 2
     number_sections: true
 editor_options: 
   chunk_output_type: console
+  
+knit: (
+  function(inputFile, encoding) { 
+    rmarkdown::render( 
+      input       = inputFile, 
+      encoding    = encoding,       
+      output_file = paste0("DRAFT_UGA_DSC_report_", format(Sys.Date(), "%Y%m%d"))
+      ) 
+      }
+      )
 ---
 
 [^epidbios]:Department of Epidemiology and Biostatistics
@@ -26,19 +43,21 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ```{r}
-my.packages <- c("dplyr", "flextable")
+my.packages <- c("dplyr", "flextable", "knitr")
 lapply(my.packages, library, character.only=T)
 ```
 
 
-$$C= C_0 + C_{TP}*TP + C_{FP}*FP + C$$
 
 
 
+```{r echo = T}
 
+dir()
 
+getwd()
 
-
+```
 
 
 
@@ -54,11 +73,11 @@ For more details, please see appendix (add exactly where – figure XXX).
 
 
 
-
+\newpage
 # Preface {-}
 
 
-
+\newpage
 # (PART) Background {-}
 
 # Competition Prompt
@@ -72,12 +91,23 @@ For more details, please see appendix (add exactly where – figure XXX).
 
 
 
-
+\newpage
 # (PART) Bank XYZ and Credit Bureaus' Credit Data {-}
 
 # Univariate Descriptions
 
-Table 1
+Table \@ref(tab:table1)
+
+```{r table1}
+load("../../04-Data-Visualization/01-Tables/table_1s.rds")
+
+# training data
+## need to remake tables and round their numeric values
+flextable(table.1s[[2]]) %>% set_caption("Descriptive Statistics of Training Data")
+
+```
+
+
 
 # Exploratory Data Analysis
 
@@ -95,7 +125,7 @@ Figure Correlation Matrix
 
 
 
-
+\newpage
 # (PART) Modeling and Predicting Probabilities of Account Default
 
 # Logistic Regression
@@ -132,12 +162,45 @@ Table
 - Confusion Matrices
 
 
+
+Figure \@ref(fig:lasso-auc)
+
+
+
+```{r lasso-auc, fig.width=7.5, fig.height=9/16*7.5, fig.cap = "Adaptive LASSO Logistic Regression Hyperparameters and Areas Under the Receiver Operating Characteristic Curve"}
+
+include_graphics("../../04-Data-Visualization/02-Figures/alasso_models_auc.png")
+
+
+```
+
+
+Figure \@ref(fig:lasso-profit)
+
+
+```{r lasso-profit, fig.width=7.5, fig.height=9/16*7.5, fig.cap = "Adaptive LASSO Logistic Regression Hyperparameters and Estimated Monthly Profit per Applicant"}
+
+include_graphics("../../04-Data-Visualization/02-Figures/alasso_models_profit.png")
+
+
+```
+
+
+
+
+
+
 # Random Forest
 
 ## Methods
 
 
 ## Results
+
+
+
+
+
 
 Figure
 - Training --> ROC & Cost on training and validation datasets
@@ -148,9 +211,89 @@ Figure
 Table
 - Confusion matrices
 
+Figure \@ref(fig:rf-auc)
+
+```{r rf-auc, fig.width=7.5, fig.height=9/16*7.5, fig.cap = "Random Forest Hyperparameters and Areas Under the Receiver Operating Characteristic Curve"}
+
+include_graphics("../../04-Data-Visualization/02-Figures/rf_models_auc.png")
+
+
+```
+
+
+Figure \@ref(fig:rf-profit)
+
+```{r rf-profit, fig.width=7.5, fig.height=9/16*7.5, fig.cap = "Random Forest Hyperparameters and Estimated Monthly Profit per Applicant"}
+
+include_graphics("../../04-Data-Visualization/02-Figures/rf_models_profit.png")
+
+
+```
+
+
+
+
+
+
+
+
+Figure \@ref(fig:rf-importance)
+
+```{r rf-importance, fig.width=7.5, fig.height=9/16*7.5, fig.cap = "Variable Importance in Random Forest Model"}
+
+include_graphics("../../04-Data-Visualization/02-Figures/rf_variable_importance.png")
+
+
+```
+
+
+
+
+
+
+
+
 
 
 # Model Comparisons
+
+
+
+```{r}
+load("../../04-Data-Visualization/01-Tables/comparisons.rdata")
+
+```
+
+
+Table \@ref(tab:lasso-confusion)
+
+```{r lasso-confusion}
+
+l.cm.ft %>% set_caption("Confusion Matrix for Adaptive LASSO Logistic Regression Model Predictions on the Test Data")
+
+```
+
+
+Table \@ref(tab:rf-confusion)
+
+```{r rf-confusion}
+
+r.cm.ft %>% set_caption("Confusion Matrix for Random Forest Model Predictions on the Test Data")
+
+```
+
+
+
+
+Table \@ref(tab:comparison)
+
+```{r comparison}
+
+comparison.ft %>% set_caption("Various Performance Metrics Comparing Predictions on the Test Data from Adaptive LASSO Logistic Regression and Random Forest Models")
+
+```
+
+
 
 
 ## Accuracy
@@ -170,7 +313,7 @@ Transparency
 
 
 
-
+\newpage
 # (PART) Discussion
 
 # Scenario Application
@@ -190,6 +333,19 @@ Figure
 
 
 
+Figure \@ref(fig:example)
+
+```{r example, fig.width=7.5, fig.height=9/16*7.5, fig.cap = "Explanation of A Rejected Applicant"}
+
+include_graphics("../../04-Data-Visualization/02-Figures/rejection_example.png")
+
+
+```
+
+
+
+
+
 
 
 # Conclusions
@@ -197,13 +353,28 @@ Figure
 Dilemma of basing credit approvals on default data (inherently missing approvals that should have been made, identifying only those that shouldn't have been)
 
 
-
+\newpage
 # References
 
 
 
 
+```{r eval=F}
+knitr::write_bib(x = 
+                   c('knitr', 'rmarkdown', 'bookdown', 'dplyr', 'magrittr', 'randomForest', 
+                     'parallel', 'doParallel', 'dlookr', 'tidyverse', 'Hmisc', 'corrplot', 
+                     'brms', 'caret', 'here', 'skimr', 'DataExplorer', 'pROC', 'patchwork', 
+                     'purrr', 'flextable', 'glmnet', 'tibble', 'doRNG'), 
+                 file = "./00-References/packages.bib")
+```
 
+
+
+
+
+
+
+\newpage
 # (APPENDIX) Appendix {-}
 
 ## Extended Exploratory Data Analysis
@@ -241,10 +412,12 @@ Dilemma of basing credit approvals on default data (inherently missing approvals
 
 
 
-# Table 1
+# Table 1s
 
 
 ```{r}
+flextable(table.1s[[3]]) %>% set_caption("Descriptive Statistics of Validation Data")
+flextable(table.1s[[1]]) %>% set_caption("Descriptive Statistics of Test Data")
 
 
 
