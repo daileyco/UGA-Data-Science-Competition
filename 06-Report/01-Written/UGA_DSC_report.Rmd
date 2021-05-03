@@ -12,6 +12,7 @@ date: '`r format(Sys.Date(), "%d %B %Y")`'
 bibliography: ["../../00-References/references.bib"]
 biblio-style: apalike
 csl: "../../00-References/epidemiology.csl"
+nocite: '@*'
 link-citations: yes
 
 output: 
@@ -70,7 +71,7 @@ We are expected to work as a team to develop ***credit decision models*** using 
 
 Specifically, we are asked to   
 1. Conduct an exploratory data analysis (Section \@ref(eda))    
-2. Develop and fit a logistic regression model (Section @\ref(logistic))    
+2. Develop and fit a logistic regression model (Section \@ref(logistic))    
 3. Develop an additional machine learning (ML) model: random forest, gradient boosting, or feedforward neural network (Section \@ref(rf))    
 4. Compare the logistic regression model with ML model, select one for credit approval, and describe the reason for our selection (Section \@ref(compare))    
 5. Answer the following questions: (Section \@ref(explain))     
@@ -124,7 +125,7 @@ To predict whether or not individuals will default, 2 classes of models were fit
 
 where: TP, FP, TN, and FN refer to the frequencies of true positives, false positives, true negatives, and false negatives, respectively; $\mu_1$ and $\mu_2$ are the average monthly credit card debt for an individuals who did not default or who defaulted, respectively; $p_{merchant}$ and $p_{interest}$ are the profit margins for a credit lendor with respect to purchases made (merchant) and interest from late payments (interest); and $\mu_{delinquencies}$ is the average number of delinquencies.[^estimations] 
 
-{^estimations]: A positive in this sense refers to the prediction of Default, where a true positive refers to someone we predicted and who in fact defaulted. The true positives and the false positives were assumed to not have contributed in profit calculations as they represent credit denials (hence zeros in the equation). The average monthly credit card debt for an individual was calculated from the validation dataset using the variable `avg_card_debt` and its geometric mean for the those who did not default ($\mu_1 = \$13097.04$) and defaulted ($\mu_2 = \$13525.80$), separately. We assumed the profit margins on purchases ($p_{merchant}$) and interest payments ($p_{interest}$) to be 1% and 10% of the average monthly credit card debt. The average number of deliquencies ($\mu_{delinquencies} = 0.024$) was calculated using the validation dataset and the `non_mtg_acc_past_due_12_months_num` variable and its quadratic mean for those who did not default divided by 12 (to get monthly). We understand the `avg_card_debt` variable can correspond to many credit cards, but we did not feel capable of estimating an individual's total number of credit cards to correct for this. Also, these calculations were made at the population level and, therefore, assumed the same values for each credit applicant; although, it may be possible to reconfigure to incorporate an individual's data. 
+[^estimations]: A positive in this sense refers to the prediction of Default, where a true positive refers to someone we predicted and who in fact defaulted. The true positives and the false positives were assumed to not have contributed in profit calculations as they represent credit denials (hence zeros in the equation). The average monthly credit card debt for an individual was calculated from the validation dataset using the variable `avg_card_debt` and its geometric mean for the those who did not default ($\mu_1 = \$13097.04$) and defaulted ($\mu_2 = \$13525.80$), separately. We assumed the profit margins on purchases ($p_{merchant}$) and interest payments ($p_{interest}$) to be 1% and 10% of the average monthly credit card debt. The average number of deliquencies ($\mu_{delinquencies} = 0.024$) was calculated using the validation dataset and the `non_mtg_acc_past_due_12_months_num` variable and its quadratic mean for those who did not default divided by 12 (to get monthly). We understand the `avg_card_debt` variable can correspond to many credit cards, but we did not feel capable of estimating an individual's total number of credit cards to correct for this. Also, these calculations were made at the population level and, therefore, assumed the same values for each credit applicant; although, it may be possible to reconfigure to incorporate an individual's data. 
 
 Finally, with a single threshold chosen for each model, the most accurate model (as determined via the distance to corner metric, Equation \@ref(eq:d2c)) was chosen from each model class. 
 
@@ -146,13 +147,21 @@ Our main outcome of interest is whether or not an individual defaults when apply
 ## Methods
 
 
-In a normal logistic regression with a binary outcome, our model is defined by logit(E(Y│X)=β^T (X), where Y is the binary outcome (whether or not an individual defaulted), X = (1,X_1,…,X_p) is the vector of covariate values, and β = (β_0,β_1,…,β_p ) is the vector of regression parameters. In a penalized regression, estimation is generally in the form of an optimization problem that seeks to maximize the function in the form of L(β)-λ*pen(β), where pen(β) is the “penalty” and λ is the “tuning parameter”. The penalty refers to a constraint surrounding the betas and the tuning parameter corresponds to the amount of “shrinkage” applied to the coefficient. In this analysis, an adaptive LASSO (least absolute shrinkage and selection operator) with logistic regression was employed to estimate coefficients and select the most important predictors. Adaptive LASSO is conducted in 2 parts – the first is a “ridge” regression is conducted that uses a penalty proportional to the sum of squares of the regression coefficients and efficiently handles multicollinearity (Equation 1).
+In a normal logistic regression with a binary outcome, our model is defined by logit(E(Y│X)=β^T (X), where Y is the binary outcome (whether or not an individual defaulted), X = (1,X_1,…,X_p) is the vector of covariate values, and β = (β_0,β_1,…,β_p ) is the vector of regression parameters. In a penalized regression, estimation is generally in the form of an optimization problem that seeks to maximize the function in the form of L(β)-λ*pen(β), where pen(β) is the “penalty” and λ is the “tuning parameter”. The penalty refers to a constraint surrounding the betas and the tuning parameter corresponds to the amount of “shrinkage” applied to the coefficient. In this analysis, an adaptive LASSO (least absolute shrinkage and selection operator) with logistic regression was employed to estimate coefficients and select the most important predictors. Adaptive LASSO is conducted in 2 parts – the first is a “ridge” regression is conducted that uses a penalty proportional to the sum of squares of the regression coefficients and efficiently handles multicollinearity (Equation \@ref(eq:ridge)).
 
-  (Equation 1)
 
-The second step is the LASSO step that imposes a constraint on the sum of the absolute value of the regression coefficients and uses data-dependent weights (the inverse of the ridge regression coefficients) to penalize regression coefficients accordingly (Equation 2). Therefore strong predictors’ coefficients are shrunk less than coefficients of weak predictors. 
+\begin{equation}
+  \hat{\beta} = argmax \{ l(\beta) - \lambda_1 \sum_{j=1}^p \beta_j^2 \}
+  (\#eq:ridge)
+\end{equation}
 
-  (Equation 2). 
+The second step is the LASSO step that imposes a constraint on the sum of the absolute value of the regression coefficients and uses data-dependent weights (the inverse of the ridge regression coefficients) to penalize regression coefficients accordingly (Equation \@ref(eq:lasso)). Therefore strong predictors’ coefficients are shrunk less than coefficients of weak predictors. 
+
+\begin{equation}
+  \hat{\beta} = argmax \{ l(\beta) - \lambda_2 \sum_{j=1}^p \gamma_j |\beta_j| \}
+  (\#eq:lasso)
+\end{equation}
+
 
 Continuous predictors were standardized to have mean 0 and standard deviation 1 before penalized regression was conducted. The main focus of penalized regression is predictive performance rather than uncertainty around the coefficient itself. Confidence intervals for coefficients and predicted probabilities from penalized methods are problematic because coefficients are already biased toward the null because of the inherent penalty term and not presented with regression coefficients. In the table below, we show the standardized coefficient estimates for both ordinary logistic regression and adaptive lasso as well as the shrinkage associated with each coefficient.
 
@@ -386,57 +395,3 @@ knitr::write_bib(x =
 ```
 
 
-
-
-
-
-
-\newpage
-# (APPENDIX) Appendix {-}
-
-## Extended Exploratory Data Analysis
-
-
-
-
-## Training Details
-
-### Class Imbalance
-
-### Cutoff Thresholds
-
-
-
-
-## Cost Rationale
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Table 1s
-
-
-```{r}
-flextable(table.1s[[3]]) %>% set_caption("Descriptive Statistics of Validation Data")
-flextable(table.1s[[1]]) %>% set_caption("Descriptive Statistics of Test Data")
-
-
-
-
-```
